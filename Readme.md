@@ -1,6 +1,6 @@
 # Mike's Tea Shop Management System
 
-![Mike's Tea Shop Banner](/tea.jpg)
+![Mike's Tea Shop Banner](/tea.png)
 
 ## Table of Contents
 - [Overview](#overview)
@@ -85,23 +85,249 @@ double price = calculatePriceWithBreakdown("green tea, pearl, coconut, 50%");
 
 ### Example Output
 ```
+=== MIKE'S TEA SHOP - DYNAMIC SYSTEM ===
+
+
 === MIKE'S TEA SHOP MENU ===
 
 TEAS:
-  Black Tea - $3.00
   Green Tea - $3.50
   Oolong Tea - $4.00
+  Black Tea - $3.00
 
 MATERIALS:
+  Honey Bean - +$0.80
   Pearl - +$0.75
   Coconut - +$0.50
-  Honey Bean - +$0.80
 
 SWEET LEVELS:
   100%
-  50%
-  30%
   0% (-$0.50)
+  30%
+  50%
+=============================
+
+=== ORIGINAL ORDERS ===
+
+--- Order: black tea, 0% ---
+Tea: Black Tea - $3.00
+Sweet Level: 0%
+Discount: -$0.50
+-------------------------
+Price: $2.50
+
+--- Order: green tea, pearl, coconut, 0% ---
+Tea: Green Tea - $3.50
++ Pearl - $0.75
++ Coconut - $0.50
+Sweet Level: 0%
+Discount: -$0.50
+-------------------------
+Price: $4.25
+
+--- Order: oolong tea, coconut, 50% ---
+Tea: Oolong Tea - $4.00
++ Coconut - $0.50
+Sweet Level: 50%
+-------------------------
+Price: $4.50
+
+=== ADDING NEW ITEMS ===
+Added tea: Earl Grey ($3.25)
+Added tea: Jasmine Tea ($3.75)
+Added material: Tapioca ($0.60)
+Added material: Jelly ($0.45)
+Added sweet level: 75% (no change $0.00)
+Added sweet level: Extra Sweet (surcharge $0.25)
+Updated tea: Earl Grey price from $3.25 to $3.50
+
+=== MIKE'S TEA SHOP MENU ===
+
+TEAS:
+  Green Tea - $3.50
+  Jasmine Tea - $3.75
+  Oolong Tea - $4.00
+  Black Tea - $3.00
+  Earl Grey - $3.50
+
+MATERIALS:
+  Honey Bean - +$0.80
+  Tapioca - +$0.60
+  Jelly - +$0.45
+  Pearl - +$0.75
+  Coconut - +$0.50
+
+SWEET LEVELS:
+  100%
+  extra sweet (+$0.25)
+  0% (-$0.50)
+  75%
+  30%
+  50%
+=============================
+
+=== ORDERS WITH NEW ITEMS ===
+
+--- Order: Earl Grey, Tapioca, Jelly, 75% ---
+Tea: Earl Grey - $3.50
++ Tapioca - $0.60
++ Jelly - $0.45
+Sweet Level: 75%
+-------------------------
+
+--- Order: Jasmine Tea, Pearl, Extra Sweet ---
+Tea: Jasmine Tea - $3.75
++ Pearl - $0.75
+Sweet Level: extra sweet
+Surcharge: +$0.25
+-------------------------
+
+=== REMOVING ITEMS ===
+Removed tea: Earl Grey (was $3.50)
+Removed material: Jelly (was $0.45)
+Removed sweet level: Extra Sweet
+Failed to remove item: Material 'Nonexistent Material' not found.
+
+=== MIKE'S TEA SHOP MENU ===
+
+TEAS:
+  Green Tea - $3.50
+  Jasmine Tea - $3.75
+  Oolong Tea - $4.00
+  Black Tea - $3.00
+
+MATERIALS:
+  Honey Bean - +$0.80
+  Tapioca - +$0.60
+  Pearl - +$0.75
+  Coconut - +$0.50
+
+SWEET LEVELS:
+  100%
+  0% (-$0.50)
+  75%
+  30%
+  50%
+=============================
+
+
+=== TESTING INVALID ORDERS ===
+
+1. Testing Invalid Order Format:
+
+--- Order:  ---
+ERROR: Invalid order format. Need at least tea and sweetness level.
+
+--- Order: green tea ---
+ERROR: Invalid order format. Need at least tea and sweetness level.
+
+--- Order: ,50% ---
+ERROR: Invalid tea: 
+Available teas: [green tea, jasmine tea, oolong tea, black tea]
+
+--- Order: green tea, ---
+ERROR: Invalid order format. Need at least tea and sweetness level.
+
+--- Order: green tea, ,50% ---
+Tea: Green Tea - $3.50
+ERROR: Invalid material: 
+Available materials: [honey bean, tapioca, pearl, coconut]
+
+2. Testing Invalid Tea:
+
+--- Order: nonexistent tea,50% ---
+ERROR: Invalid tea: nonexistent tea
+Available teas: [green tea, jasmine tea, oolong tea, black tea]
+
+--- Order: BLACK TEA WITH TYPO,50% ---
+ERROR: Invalid tea: black tea with typo
+Available teas: [green tea, jasmine tea, oolong tea, black tea]
+
+--- Order: 12345,50% ---
+ERROR: Invalid tea: 12345
+Available teas: [green tea, jasmine tea, oolong tea, black tea]
+
+3. Testing Invalid Materials:
+
+--- Order: green tea, fake pearl,50% ---
+Tea: Green Tea - $3.50
+ERROR: Invalid material: fake pearl
+Available materials: [honey bean, tapioca, pearl, coconut]
+
+--- Order: black tea, pearl, invalid topping,50% ---
+Tea: Black Tea - $3.00
++ Pearl - $0.75
+ERROR: Invalid material: invalid topping
+Available materials: [honey bean, tapioca, pearl, coconut]
+
+--- Order: oolong tea, 123material,50% ---
+Tea: Oolong Tea - $4.00
+ERROR: Invalid material: 123material
+Available materials: [honey bean, tapioca, pearl, coconut]
+
+4. Testing Invalid Sweet Levels:
+
+--- Order: green tea,20% ---
+Tea: Green Tea - $3.50
+ERROR: Invalid sweetness level: 20%
+Available sweet levels: [100%, 0%, 75%, 30%, 50%]
+
+--- Order: black tea,pearl,150% ---
+Tea: Black Tea - $3.00
++ Pearl - $0.75
+ERROR: Invalid sweetness level: 150%
+Available sweet levels: [100%, 0%, 75%, 30%, 50%]
+
+--- Order: oolong tea,coconut,no sugar ---
+Tea: Oolong Tea - $4.00
++ Coconut - $0.50
+ERROR: Invalid sweetness level: no sugar
+Available sweet levels: [100%, 0%, 75%, 30%, 50%]
+
+--- Order: green tea,pearl, ---
+Tea: Green Tea - $3.50
+ERROR: Invalid sweetness level: pearl
+Available sweet levels: [100%, 0%, 75%, 30%, 50%]
+
+5. Testing Edge Cases:
+
+--- Order: green tea,pearl,50%,extra ---
+Tea: Green Tea - $3.50
++ Pearl - $0.75
+ERROR: Invalid material: 50%
+Available materials: [honey bean, tapioca, pearl, coconut]
+
+--- Order:   green tea  ,  pearl  ,  50%   ---
+Tea: Green Tea - $3.50
++ Pearl - $0.75
+Sweet Level: 50%
+-------------------------
+
+--- Order: green tea,pearl,pearl,50% ---
+Tea: Green Tea - $3.50
++ Pearl - $0.75
++ Pearl - $0.75
+Sweet Level: 50%
+-------------------------
+
+--- Order: green tea,50%,pearl ---
+Tea: Green Tea - $3.50
+ERROR: Invalid material: 50%
+Available materials: [honey bean, tapioca, pearl, coconut]
+
+6. Testing Case Sensitivity:
+
+--- Order: GREEN TEA,PEARL,50% ---
+Tea: Green Tea - $3.50
++ Pearl - $0.75
+Sweet Level: 50%
+-------------------------
+
+--- Order: Green Tea,Coconut,30% ---
+Tea: Green Tea - $3.50
++ Coconut - $0.50
+Sweet Level: 30%
+-------------------------
 ```
 
 ## Exception Handling (Enhanced Version)
