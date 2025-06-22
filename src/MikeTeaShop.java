@@ -1,10 +1,23 @@
 import java.util.*;
 
+/**
+ * MIKE'S TEA SHOP - MONOLITHIC IMPLEMENTATION
+ *
+ * This implementation combines all architectural layers in a single class.
+ * In a proper Spring Boot application, these would be separated into distinct layers.
+ */
 public class MikeTeaShop {
-    // Tea and material prices - now dynamic
-    static Map<String, Double> teaMap = new HashMap<>();
-    static Map<String, Double> materialMap = new HashMap<>();
-    static Map<String, Double> sweetLevelMap = new HashMap<>();
+
+    // ===================== DATA LAYER (PERSISTENCE) =====================
+    // These Maps serve as in-memory database tables
+    // In a layered architecture, these would be replaced with:
+    // - Database tables
+    // - Repository interfaces
+    // - Entity classes
+
+    static Map<String, Double> teaMap = new HashMap<>();          // Tea "table"
+    static Map<String, Double> materialMap = new HashMap<>();     // Material "table"
+    static Map<String, Double> sweetLevelMap = new HashMap<>();   // Sweet level "table"
 
     static {
         // Initialize default teas
@@ -24,9 +37,13 @@ public class MikeTeaShop {
         sweetLevelMap.put("0%", -0.50); // 50 cents discount
     }
 
-    // ===================== MANAGEMENT METHODS =====================
+    // ===================== SERVICE LAYER (BUSINESS LOGIC) =====================
+    // These methods contain the core business logic
+    // In a layered architecture, these would be in @Service classes
 
-    // Tea management
+    /**
+     * Tea management service methods
+     */
     public static void addTea(String name, double price) {
         teaMap.put(name.toLowerCase(), price);
         System.out.println("Added tea: " + name + " ($" + String.format("%.2f", price) + ")");
@@ -42,7 +59,9 @@ public class MikeTeaShop {
         return false;
     }
 
-    // Material management
+    /**
+     * Material management service methods
+     */
     public static void addMaterial(String name, double price) {
         materialMap.put(name.toLowerCase(), price);
         System.out.println("Added material: " + name + " ($" + String.format("%.2f", price) + ")");
@@ -58,7 +77,9 @@ public class MikeTeaShop {
         return false;
     }
 
-    // Sweet level management
+    /**
+     * Sweet level management service methods
+     */
     public static void addSweetLevel(String name, double priceAdjustment) {
         sweetLevelMap.put(name.toLowerCase(), priceAdjustment);
         String type = priceAdjustment < 0 ? "discount" : priceAdjustment > 0 ? "surcharge" : "no change";
@@ -75,8 +96,15 @@ public class MikeTeaShop {
         return false;
     }
 
-    // ===================== DISPLAY METHODS =====================
+    // ===================== PRESENTATION LAYER (VIEW/CONTROLLER) =====================
+    // These methods handle display and user interaction
+    // In a layered architecture, these would be split into:
+    // - @Controller classes (for input handling)
+    // - View templates or DTOs (for output)
 
+    /**
+     * Displays the current menu (View functionality)
+     */
     public static void showMenu() {
         System.out.println("\n=== MIKE'S TEA SHOP MENU ===");
 
@@ -99,6 +127,9 @@ public class MikeTeaShop {
         System.out.println("=============================\n");
     }
 
+    /**
+     * Helper method for formatting display strings
+     */
     private static String capitalizeWords(String str) {
         return Arrays.stream(str.split(" "))
                 .map(word -> word.substring(0, 1).toUpperCase() + word.substring(1))
@@ -106,12 +137,17 @@ public class MikeTeaShop {
                 .orElse("");
     }
 
-    // ===================== PRICING CALCULATION =====================
-
-
+    // ===================== CORE BUSINESS SERVICE =====================
+    /**
+     * Calculates order price with detailed breakdown
+     * Combines:
+     * - Controller logic (input handling)
+     * - Service logic (price calculation)
+     * - View logic (console output)
+     */
     public static double calculatePriceWithBreakdown(String input) {
+        // Input validation (Controller aspect)
         String[] parts = input.toLowerCase().split(",\\s*");
-
         System.out.println("\n--- Order: " + input + " ---");
 
         if (parts.length < 2) {
@@ -119,6 +155,7 @@ public class MikeTeaShop {
             return 0.0;
         }
 
+        // Tea validation and pricing (Service aspect)
         String tea = parts[0].trim();
         if (!teaMap.containsKey(tea)) {
             System.out.println("Invalid tea: " + tea + ". Available: " + teaMap.keySet());
@@ -131,7 +168,7 @@ public class MikeTeaShop {
 
         System.out.println("Tea: " + capitalizeWords(tea) + " - $" + String.format("%.2f", teaPrice));
 
-        // Handle materials
+        // Material handling (Service aspect)
         for (int i = 1; i < parts.length - 1; i++) {
             String material = parts[i].trim();
             if (materialMap.containsKey(material)) {
@@ -145,7 +182,7 @@ public class MikeTeaShop {
             }
         }
 
-        // Handle sweetness
+        // Sweetness level handling (Service aspect)
         String sweetness = parts[parts.length - 1].trim();
         if (!sweetLevelMap.containsKey(sweetness)) {
             System.out.println("Invalid sweetness level: " + sweetness + ". Available: " + sweetLevelMap.keySet());
@@ -155,21 +192,28 @@ public class MikeTeaShop {
         double sweetAdjustment = sweetLevelMap.get(sweetness);
         System.out.println("Sweet Level: " + sweetness);
 
+        // Display adjustments (View aspect)
         if (sweetAdjustment < 0) {
             System.out.println("Discount: -$" + String.format("%.2f", Math.abs(sweetAdjustment)));
         } else if (sweetAdjustment > 0) {
             System.out.println("Surcharge: +$" + String.format("%.2f", sweetAdjustment));
         }
 
+        // Price calculation (Core business logic)
         double totalPrice = Math.max(teaPrice + materialCost + sweetAdjustment, 0.50);
-        //System.out.println("TOTAL: $" + String.format("%.2f", totalPrice));
         System.out.println("-------------------------");
         return totalPrice;
     }
 
-
-    // ===================== MAIN DEMO =====================
-
+    // ===================== APPLICATION LAYER =====================
+    /**
+     * Main method - serves as application controller
+     * Orchestrates the workflow between all components
+     * In a layered architecture, this would be replaced with:
+     * - Proper Spring Boot application startup
+     * - Dependency injection
+     * - REST endpoints or proper UI framework
+     */
     public static void main(String[] args) {
         System.out.println("=== MIKE'S TEA SHOP - DYNAMIC SYSTEM ===\n");
 
@@ -181,7 +225,6 @@ public class MikeTeaShop {
         System.out.println("Price: $" + String.format("%.2f", calculatePriceWithBreakdown("black tea, 0%")));
         System.out.println("Price: $" + String.format("%.2f", calculatePriceWithBreakdown("green tea, pearl, coconut, 0%")));
         System.out.println("Price: $" + String.format("%.2f", calculatePriceWithBreakdown("oolong tea, coconut, 50%")));
-
 
         // Demo: Add new items
         System.out.println("\n=== ADDING NEW ITEMS ===");
